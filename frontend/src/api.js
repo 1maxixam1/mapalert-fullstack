@@ -1,10 +1,3 @@
 export const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:4000'
-
-export async function api(path, options={}) {
-  const res = await fetch(`${API_BASE}${path}`, {
-    headers: { 'Content-Type': 'application/json', ...(options.headers || {}) },
-    ...options
-  })
-  if (!res.ok) throw new Error(`API error ${res.status}`)
-  return res.json()
-}
+export async function getMarks(){const r=await fetch(`${API_BASE}/api/marks`); if(!r.ok) throw new Error('err'); return r.json()}
+export async function addMark(p){const r=await fetch(`${API_BASE}/api/marks`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(p)}); if(!r.ok) throw new Error('err'); return r.json()}

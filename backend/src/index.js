@@ -17,21 +17,13 @@ app.use(cors({
   credentials: true
 }))
 
-// Connect once at boot
-client.connect().then(()=>console.log('DB connected')).catch(err=>{
-  console.error('DB connection error', err)
-  process.exit(1)
-})
+client.connect().then(()=>console.log('DB connected')).catch(err=>{ console.error('DB connection error', err); process.exit(1) })
 
-// Helper to purge expired marks
-async function cleanupExpired() {
-  await client.query('DELETE FROM marks WHERE expires_at <= NOW()')
-}
+async function cleanupExpired() { await client.query('DELETE FROM marks WHERE expires_at <= NOW()') }
 
-// Routes
 app.get('/api/health', (_, res)=> res.json({ ok: true }))
 
-app.get('/api/marks', async (req, res) => {
+app.get('/api/marks', async (_req, res) => {
   await cleanupExpired()
   const { rows } = await client.query('SELECT * FROM marks WHERE expires_at > NOW() ORDER BY id DESC')
   res.json(rows)
@@ -39,14 +31,12 @@ app.get('/api/marks', async (req, res) => {
 
 app.post('/api/marks', async (req, res) => {
   const { text, lat, lng, imageBase64, ttlDays } = req.body || {}
-  if (!text || typeof lat !== 'number' || typeof lng !== 'number') {
-    return res.status(400).json({ error: 'text, lat, lng requeridos' })
-  }
+  if (!text || typeof lat !== 'number' || typeof lng !== 'number') return res.status(400).json({ error: 'text, lat, lng requeridos' })
   const ttl = Number(ttlDays) > 0 ? Number(ttlDays) : 7
-  const { rows } = await client.query(
-    'INSERT INTO marks (text, lat, lng, image_base64, expires_at) VALUES ($1,$2,$3,$4, NOW() + ($5||' days')::interval) RETURNING *',
-    [text, lat, lng, imageBase64 || null, ttl]
-  )
+  const { rows } = await client.query(`
+     INSERT INTO marks (text, lat, lng, image_base64, expires_at)
+     VALUES ($1, $2, $3, $4, NOW() + ($5::int) * INTERVAL '1 day')
+     RETURNING *`, [text, lat, lng, imageBase64 || null, ttl])
   res.status(201).json(rows[0])
 })
 
@@ -57,9 +47,6 @@ app.delete('/api/marks/:id', async (req, res) => {
   res.json({ ok: true })
 })
 
-app.post('/api/cleanup', async (req, res) => {
-  await cleanupExpired()
-  res.json({ ok: true })
-})
+app.post('/api/cleanup', async (_req, res) => { await cleanupExpired(); res.json({ ok: true }) })
 
 app.listen(port, ()=> console.log('API on :' + port))

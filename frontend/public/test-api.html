@@ -1,20 +1,11 @@
-<!doctype html>
-<html lang="es">
-  <meta charset="utf-8"/>
-  <title>API Test</title>
-  <script>
-    const API = (window.VITE_API_URL || '') || (new URLSearchParams(location.search).get('api') || 'http://localhost:4000')
-    async function load() {
-      document.getElementById('api').textContent = API
-      const r = await fetch(API + '/api/marks')
-      const data = await r.json()
-      document.getElementById('out').textContent = JSON.stringify(data, null, 2)
-    }
-    window.addEventListener('DOMContentLoaded', load)
-  </script>
-  <body>
-    <h1>API Test</h1>
-    <p>API base: <code id="api"></code></p>
-    <pre id="out">Loading...</pre>
-  </body>
-</html>
+<!doctype html><html lang="es"><meta charset="utf-8"/><title>API Test</title>
+<script>
+const API = new URLSearchParams(location.search).get('api') || 'http://localhost:4000'
+addEventListener('DOMContentLoaded', async ()=>{
+  document.getElementById('api').textContent = API
+  const r = await fetch(API + '/api/marks'); document.getElementById('out').textContent = await r.text()
+})
+</script>
+<body style="font-family:system-ui;margin:2rem;">
+  <h1>API Test</h1><p>API base: <code id="api"></code></p><pre id="out">Loading...</pre>
+</body></html>

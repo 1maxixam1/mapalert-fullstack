@@ -1,7 +1,10 @@
 {
   "name": "mapalert-backend",
-  "version": "0.0.1",
+  "version": "1.0.0",
   "type": "module",
+  "engines": {
+    "node": ">=18 <=20.14"
+  },
   "scripts": {
     "dev": "nodemon src/index.js",
     "start": "node scripts/migrate.js && node src/index.js",
