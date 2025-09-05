@@ -44,9 +44,12 @@ app.post('/api/marks', async (req, res) => {
   }
   const ttl = Number(ttlDays) > 0 ? Number(ttlDays) : 7
   const { rows } = await client.query(
-    'INSERT INTO marks (text, lat, lng, image_base64, expires_at) VALUES ($1,$2,$3,$4, NOW() + ($5||' days')::interval) RETURNING *',
-    [text, lat, lng, imageBase64 || null, ttl]
-  )
+  `INSERT INTO marks (text, lat, lng, image_base64, expires_at)
+   VALUES ($1, $2, $3, $4, NOW() + ($5::int) * INTERVAL '1 day')
+   RETURNING *`,
+  [text, lat, lng, imageBase64 || null, ttl]
+)
+
   res.status(201).json(rows[0])
 })
 
