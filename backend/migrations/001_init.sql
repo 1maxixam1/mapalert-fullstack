@@ -1,0 +1,10 @@
+CREATE TABLE IF NOT EXISTS marks (
+  id SERIAL PRIMARY KEY,
+  text VARCHAR(255) NOT NULL,
+  lat DOUBLE PRECISION NOT NULL,
+  lng DOUBLE PRECISION NOT NULL,
+  image_base64 TEXT,
+  expires_at TIMESTAMPTZ DEFAULT NOW() + INTERVAL '7 days',
+  created_at TIMESTAMPTZ DEFAULT NOW()
+);
+CREATE INDEX IF NOT EXISTS idx_marks_expires ON marks(expires_at);

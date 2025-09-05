@@ -1,0 +1,10 @@
+/* Animación de color para el ícono (verde -> rojo -> azul) */
+.q-anim {
+  animation: qColor 2s linear infinite;
+}
+
+@keyframes qColor {
+  0%   { color: #22c55e; } /* verde */
+  50%  { color: #ef4444; } /* rojo */
+  100% { color: #3b82f6; } /* azul */
+}
